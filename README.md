@@ -44,7 +44,7 @@ By default outputs are written to the `results/` directory (created automaticall
 
 The `DockerImage/Dockerfile` bundles the dependencies and builds both OSRM and this application in the image. It is probably much easier to run this in the Docker container, since builiding with osrm can be troublesome. 
 
-Make sure you have Docker installed on your system. Then, copy the contents of the `DockerImage` folder and run these commands on the terminal while you are in the `DockerImage` folder:
+Make sure you have Docker installed on your system. Then, copy the contents of the `DockerImage` folder. Make sure you add your `coordinates.txt` file to `DockerImage/results` and download your `osm.pbf` file from [here](https://download.geofabrik.de/) and call it `region.osm.pbf`. Afterwards, run these commands on the terminal while you are in the `DockerImage` folder:
 
 Build the image:
 ```sh
@@ -56,7 +56,7 @@ Run a container and let the files be out put in the `results` folder:
 docker run -v $(pwd)/results:/app/results app/osrm
 ```
 
-This will run the code in the docker container and write the `.csv`fiels in your local folder. 
+This will run the code in the Docker container and write the `.csv` files in your local folder. Note that this DockeImage uses the car profile with the standard settings.
 
 Make sure you provide the list of coordinates in `DockerImage/results/coordinates.txt`.
 

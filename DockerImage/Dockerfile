@@ -64,6 +64,16 @@ ADD CMakeLists.txt ./
 ADD src ./src/
 ADD include ./include/
 ADD OSM ./OSM/
+
+# If the PBF is present, extract and contract it to produce the .osrm files.
+# We use the car profile from the cloned osrm-backend sources.
+RUN if [ -f /app/OSM/region.osm.pbf ]; then \
+            echo "Found region.pbf, running osrm-extract and osrm-contract..." && \
+            osrm-extract -p /app/osrm-backend/profiles/car.lua /app/OSM/region.osm.pbf && \
+            osrm-contract /app/OSM/region.osrm ; \
+        else \
+            echo "No /app/OSM/region.osm.pbf found, skipping extract/contract step." ; \
+        fi
 ADD results ./results/
 
 WORKDIR /app/build
@@ -75,5 +85,5 @@ RUN cmake --build . --parallel 8
 
 # Set the entry point to execute the application with arguments
 ENTRYPOINT ["/app/build/osrm", \
-            "--osrm-path", "/app/OSM/belgium-latest.osrm", \
+            "--osrm-path", "/app/OSM/region.osrm", \
             "--coordinates-path", "/app/results/coordinates.txt"]
