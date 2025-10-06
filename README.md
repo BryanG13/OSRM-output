@@ -46,9 +46,9 @@ The `DockerImage/Dockerfile` bundles the dependencies and builds both OSRM and t
 
 Make sure you have Docker installed on your system. Then, copy the contents of the `DockerImage` folder and run these commands on the terminal while you are in the `DockerImage` folder:
 
-Build the image (from repository root):
+Build the image:
 ```sh
-docker build -f DockerImage/Dockerfile -t osrm-output:latest
+docker build . -t app/osrm
 ```
 
 Run a container and let the files be out put in the `results` folder:
