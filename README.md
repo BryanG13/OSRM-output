@@ -44,7 +44,7 @@ By default outputs are written to the `results/` directory (created automaticall
 
 The `DockerImage/Dockerfile` bundles the dependencies and builds both OSRM and this application in the image. It is probably much easier to run this in the Docker container, since builiding with osrm can be troublesome. 
 
-Make sure you have Docker installed on your system. Then, copy the contents of the `DockerImage` folder. Make sure you add your `coordinates.txt` file to `DockerImage/results`. Download the `osm.pbf` file of the region you are interested in from [here](https://download.geofabrik.de/), call it `region.osm.pbf` and copy it into `/app/OSM`. Afterwards, run these commands on the terminal while you are in the `DockerImage` folder:
+Firstly, make sure you have [Docker](https://www.docker.com/) installed on your system. Secondly, copy the contents of the `DockerImage` folder. Then, make sure you add your `coordinates.txt` file to `DockerImage/results`. Aftwerwards, download the `osm.pbf` file of the region you are interested in from [this site](https://download.geofabrik.de/), call it `region.osm.pbf` and copy it into `/app/OSM`. Lastly, run these commands on the terminal while you are in the `DockerImage` folder:
 
 Build the image:
 ```sh
