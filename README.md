@@ -65,7 +65,7 @@ Make sure you provide the list of coordinates in `DockerImage/results/coordinate
 Prerequisites
 - CMake
 - A C++17-capable compiler (g++/clang)
-- An OSRM dataset (.osrm files) for the region you want to query (e.g. Belgium)
+- An OSRM dataset (.osrm files) for the region you want to query (e.g. Belgium), these are the processed osm.pbf files by the OSRM engine 
 
 Build
 
@@ -80,10 +80,10 @@ Run
 
 ```sh
 # Provide an OSRM dataset and optional coordinates file
-./build/osrm --osrm-path /full/path/to/belgium-latest.osrm --coordinates-path /full/path/to/coords.txt
+./build/osrm --osrm-path /full/path/to/region.osrm --coordinates-path /full/path/to/coords.txt
 
 # If you omit --coordinates-path the program samples 100 points inside a small central-Belgium bounding area
-./build/osrm --osrm-path /full/path/to/belgium-latest.osrm
+./build/osrm --osrm-path /full/path/to/region.osrm
 ```
 
 Notes:
