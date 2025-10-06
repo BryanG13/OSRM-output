@@ -78,7 +78,7 @@ Make sure you have Docker installed on your system. Then, copy the contents of t
 
 Build the image (from repository root):
 ```sh
-docker build -f DockerImage/Dockerfile -t osrm-output:latest .
+docker build -f DockerImage/Dockerfile -t osrm-output:latest
 ```
 
 Run a container and let the files be out put in the `results` folder:
