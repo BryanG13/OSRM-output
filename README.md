@@ -40,6 +40,26 @@ By default outputs are written to the `results/` directory (created automaticall
 - `results/travel_times.csv` — CSV matrix of travel times (seconds). Same indexing as distances.
 - `results/coordinates.txt` — when sampling is used, the sampled coordinates written as `longitude latitude` per line.
 
+## HOW TO USE: Docker image
+
+The `DockerImage/Dockerfile` bundles the dependencies and builds both OSRM and this application in the image. It is probably much easier to run this in the Docker container, since builiding with osrm can be troublesome. 
+
+Make sure you have Docker installed on your system. Then, copy the contents of the `DockerImage` folder and run these commands on the terminal while you are in the `DockerImage` folder:
+
+Build the image (from repository root):
+```sh
+docker build -f DockerImage/Dockerfile -t osrm-output:latest
+```
+
+Run a container and let the files be out put in the `results` folder:
+```sh
+docker run -v $(pwd)/results:/app/results app/osrm
+```
+
+This will run the code in the docker container and write the `.csv`fiels in your local folder. 
+
+Make sure you provide the list of coordinates in `DockerImage/results/coordinates.txt`.
+
 ## Build & run (native)
 
 Prerequisites
@@ -69,32 +89,6 @@ Run
 Notes:
 - If `--coordinates-path` is provided, the program uses the file you pass. If omitted, it randomly samples locations inside Belgium (small central polygon) and writes the sampled coordinates to `results/coordinates.txt`.
 - After the run you should find the CSV matrices in `results/`.
-
-## HOW TO USE: Docker image
-
-The `DockerImage/Dockerfile` bundles the dependencies and builds both OSRM and this application in the image. It is probably much easier to run this in the Docker container, since builiding with osrm can be troublesome. 
-
-Make sure you have Docker installed on your system. Then, copy the contents of the `DockerImage` folder and run these commands on the terminal while you are in the `DockerImage` folder:
-
-Build the image (from repository root):
-```sh
-docker build -f DockerImage/Dockerfile -t osrm-output:latest
-```
-
-Run a container and let the files be out put in the `results` folder:
-```sh
-docker run -v $(pwd)/results:/app/results app/osrm
-```
-
-This will run the code in the docker container and write the `.csv`fiels in your local folder. 
-
-Make sure you provide the list of coordinates in `DockerImage/results/coordinates.txt`.
-
-
-## Configuring where outputs go
-
-- Host: the program writes to `results/` in the repository root when running locally.
-- Container: the Dockerfile creates `/app/results`. Mount a host dir into `/app/results` when running the container to persist outputs.
 
 ## TBB / destructor note (macOS)
 
