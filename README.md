@@ -70,34 +70,26 @@ Notes:
 - If `--coordinates-path` is provided, the program uses the file you pass. If omitted, it randomly samples locations inside Belgium (small central polygon) and writes the sampled coordinates to `results/coordinates.txt`.
 - After the run you should find the CSV matrices in `results/`.
 
-## Docker image
+## HOW TO USE: Docker image
 
-The `DockerImage/Dockerfile` bundles the dependencies and builds both OSRM and this application in the image.
+The `DockerImage/Dockerfile` bundles the dependencies and builds both OSRM and this application in the image. It is probably much easier to run this in the Docker container, since builiding with osrm can be troublesome. 
+
+Make sure you have Docker installed on your system. Then, copy the contents of the `DockerImage` folder and run these commands on the terminal while you are in the `DockerImage` folder:
 
 Build the image (from repository root):
-
 ```sh
 docker build -f DockerImage/Dockerfile -t osrm-output:latest .
 ```
 
-Run an instance and mount host folders (recommended)
-
-The container expects the OSRM dataset under `/app/OSM` (you can mount your host dataset there). It writes outputs to `/app/results`, which you should mount to persist results on the host.
-
-Example (mount host `OSM/` and `results/`):
-
+Run a container and let the files be out put in the `results` folder:
 ```sh
-docker run --rm \
-  -v /host/path/to/OSM:/app/OSM \
-  -v $(pwd)/results:/app/results \
-  osrm-output:latest \
-  --osrm-path /app/OSM/belgium-latest.osrm \
-  --coordinates-path /app/results/coordinates.txt
+docker run -v $(pwd)/results:/app/results app/osrm
 ```
 
-Notes on entrypoint:
-- The Dockerfile defines the binary as the image `ENTRYPOINT`, but you can (and in the example do) provide additional arguments to the container command line. They will be appended to the entrypoint command.
-- If you prefer to pass a different executable or fully override entrypoint, use `--entrypoint` in `docker run`.
+This will run the code in the docker container and write the `.csv`fiels in your local folder. 
+
+Make sure you provide the list of coordinates in `DockerImage/results/coordinates.txt`.
+
 
 ## Configuring where outputs go
 
@@ -114,25 +106,3 @@ Workarounds the code includes:
 2. If you still see a crash on teardown, the code uses `std::_Exit(0)` after cleanup to avoid running the remaining C++ static destructors. This is a pragmatic workaround (it skips any further C++ destructors) — acceptable here because the program explicitly releases its OSRM/TBB resources first.
 
 If you prefer to debug the destructor-order issue instead of using `std::_Exit`, try running under a debugger or removing the early exit and instrumenting static destructors to discover which object triggers TBB access during teardown.
-
-## Troubleshooting
-
-- "coordinates-path" not being read: make sure you pass the option with leading dashes: `--coordinates-path /full/path/coords.txt` (launch configs or scripts that omit `--` will not register it as an option).
-- Wrong coordinate order: the file must be `longitude latitude` per line. If your data is (lat lon), swap columns.
-- OSRM dataset not found: ensure the `.osrm` files and related files are in the path you pass to `--osrm-path`.
-
-## Development notes
-
-- The code uses simple in-memory `int**` matrices for distances and times. For very large location sets this will consume O(n^2) memory. Consider streaming, chunking, or using a disk-backed matrix for larger scale.
-- The sampling routine currently uses a small, manually-specified polygon for central Belgium. Replace with a GeoJSON polygon if you need precise national boundaries.
-
-## License
-
-See `LICENSE` in this repository.
-
----
-
-If you want, I can:
-- Add a short example `coords.txt` in `results/` for testing.
-- Add CI task snippets to build the Docker image and run a quick smoke test that verifies CSV files are created.
-- Improve the coordinates loader to accept both `lat lon` and `lon lat` if you want auto-detection.
