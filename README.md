@@ -56,7 +56,7 @@ Run a container and let the files be out put in the `results` folder:
 docker run -v $(pwd)/results:/app/results app/osrm
 ```
 
-This will run the code in the Docker container and write the `.csv` files in your local folder. Note that this DockeImage uses the car profile with the standard settings.
+This will run the code in the Docker container and write the `.csv` files in your local folder. Note that this DockeImage uses the **car profile** (a `.lua`script, other profiles are **bicyle** and **foot**) with the standard settings. You can customize settings such as speeds, access rules, or even add penalties for turns, ferries, or toll roads (do this before extraction and contraction of `osm.pbf` files).
 
 Make sure you provide the list of coordinates in `DockerImage/results/coordinates.txt`.
 
