@@ -10,10 +10,12 @@ endif()
 cmake_policy(SET CMP0144 NEW)
 cmake_policy(SET CMP0167 NEW)
 
-# Only enable AddressSanitizer for Debug builds --> this helps finding memory issues 
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+# Make AddressSanitizer opt-in for Debug builds. On some macOS setups,
+# ASan can stall very early in runtime initialization before main().
+option(OSRM_ENABLE_ASAN "Enable AddressSanitizer in Debug builds" OFF)
+if(OSRM_ENABLE_ASAN AND CMAKE_BUILD_TYPE MATCHES "Debug")
+    add_compile_options(-fsanitize=address -fno-omit-frame-pointer -g)
+    add_link_options(-fsanitize=address)
 endif()
 
 # Project name

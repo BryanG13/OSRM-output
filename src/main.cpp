@@ -65,9 +65,6 @@ int main(int argumentCount, char *argumentVariables[]) {
         }
     }
 
-    // start the engine
-    OSRM.start_engine();
-
     // Do osrm calculations
     calculate_osrm_metrics(OSRM);
 
