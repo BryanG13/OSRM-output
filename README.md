@@ -42,6 +42,44 @@ By default outputs are written to the `results/` directory (created automaticall
 
 ## HOW TO USE: Docker image
 
+### Fast path: run.sh automation
+
+You can run the full Docker workflow with [run.sh](run.sh):
+
+```sh
+./run.sh -r belgium -c ./coordinates.txt
+```
+
+What [run.sh](run.sh) does:
+
+1. Resolves an OSM PBF source from either:
+	- `-r <region>` (Geofabrik Europe URL), or
+	- `-u <direct_pbf_url>`.
+2. Downloads and caches the file as `OSM/region.osm.pbf` (using `OSM/.last_region` as a marker).
+3. Copies your coordinates file to `results/coordinates.txt` when `-c` is provided.
+4. Builds Docker image `app/osrm` only if it does not already exist (or when `--force-build` is set).
+5. Runs the container and writes outputs to `results/` on your host.
+
+Common examples:
+
+```sh
+# Region shortcut + explicit coordinates
+bash ./run.sh -r belgium -c ./results/coordinates.txt
+
+# Direct URL
+bash ./run.sh -u https://download.geofabrik.de/europe/belgium-latest.osm.pbf -c ./coordinates.txt
+
+# Sampling mode (no coordinates file)
+bash ./run.sh -r belgium
+
+# Rebuild image even if already present
+bash ./run.sh -r belgium --force-build
+```
+
+Notes:
+- Prerequisites: Docker and curl.
+- If you change region or PBF source and already have an existing image, use `--force-build` to ensure the image is rebuilt with the new dataset.
+
 The `DockerImage/Dockerfile` bundles the dependencies and builds both OSRM and this application in the image. It is probably much easier to run this in the Docker container, since builiding with osrm can be troublesome. 
 
 Firstly, make sure you have [Docker](https://www.docker.com/) installed on your system. Secondly, copy the contents of the `DockerImage` folder. Then, make sure you add your `coordinates.txt` file to `DockerImage/results`. Aftwerwards, download the `osm.pbf` file of the region you are interested in from [this site](https://download.geofabrik.de/), call it `region.osm.pbf` and copy it into `/DockerImage/OSM`. Lastly, run these commands on the terminal while you are in the `DockerImage` folder:
