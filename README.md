@@ -16,7 +16,7 @@ This repository contains a small C++ program (CMake-based) that:
 - `src/main.cpp` — CLI entrypoint: parses arguments, loads or samples coordinates, starts the engine and runs calculations.
 - `DockerImage/Dockerfile` — Dockerfile to build a container with system dependencies and compile the app.
 
-## Coordinate format
+## Input file: coordinates
 
 The program expects a simple whitespace-separated text file where each line contains one coordinate pair. Use the format:
 
@@ -40,14 +40,27 @@ By default outputs are written to the `results/` directory (created automaticall
 - `results/travel_times.csv` — CSV matrix of travel times (seconds). Same indexing as distances.
 - `results/coordinates.txt` — when sampling is used, the sampled coordinates written as `longitude latitude` per line.
 
-## HOW TO USE: Docker image
+## Docker usage
 
 ### Fast path: run.sh automation
 
 You can run the full Docker workflow with [run.sh](run.sh):
 
 ```sh
-./run.sh -r belgium -c ./coordinates.txt
+./run.sh -r belgium -c ./results/coordinates.txt
+```
+
+If `run.sh` is not executable yet, either run:
+
+```sh
+chmod +x run.sh
+./run.sh -r belgium -c ./results/coordinates.txt
+```
+
+or invoke it with Bash:
+
+```sh
+bash ./run.sh -r belgium -c ./results/coordinates.txt
 ```
 
 What [run.sh](run.sh) does:
@@ -64,39 +77,42 @@ Common examples:
 
 ```sh
 # Region shortcut + explicit coordinates
-bash ./run.sh -r belgium -c ./results/coordinates.txt
+./run.sh -r belgium -c ./results/coordinates.txt
 
 # Direct URL
-bash ./run.sh -u https://download.geofabrik.de/europe/belgium-latest.osm.pbf -c ./coordinates.txt
+./run.sh -u https://download.geofabrik.de/europe/belgium-latest.osm.pbf -c ./results/coordinates.txt
 
 # Sampling mode (no coordinates file)
-bash ./run.sh -r belgium
+./run.sh -r belgium
 
 # Rebuild image even if already present
-bash ./run.sh -r belgium --force-build
+./run.sh -r belgium --force-build
 ```
 
 Notes:
 - Prerequisites: Docker and curl.
+- `./run.sh` and `bash ./run.sh` are equivalent; use whichever you prefer.
 - If you change region or PBF source and already have an existing image, use `--force-build` to ensure the image is rebuilt with the new dataset.
 
-The `DockerImage/Dockerfile` bundles the dependencies and builds both OSRM and this application in the image. It is probably much easier to run this in the Docker container, since builiding with osrm can be troublesome. 
+### Manual Docker workflow (advanced)
 
-Firstly, make sure you have [Docker](https://www.docker.com/) installed on your system. Secondly, copy the contents of the `DockerImage` folder. Then, make sure you add your `coordinates.txt` file to `DockerImage/results`. Aftwerwards, download the `osm.pbf` file of the region you are interested in from [this site](https://download.geofabrik.de/), call it `region.osm.pbf` and copy it into `/DockerImage/OSM`. Lastly, run these commands on the terminal while you are in the `DockerImage` folder:
+The `DockerImage/Dockerfile` bundles dependencies and builds both OSRM and this application.
 
-Build the image:
+If you want to run Docker manually (without [run.sh](run.sh)):
+
+1. Make sure Docker is installed.
+2. Place your coordinates file in `DockerImage/results/coordinates.txt` (optional; omit for sampling).
+3. Download a region file from [Geofabrik](https://download.geofabrik.de/), rename it to `region.osm.pbf`, and place it in `DockerImage/OSM/`.
+4. From `DockerImage/`, run:
+
 ```sh
 docker build . -t app/osrm
-```
-
-Run a container and let the files be out put in the `results` folder:
-```sh
 docker run -v $(pwd)/results:/app/results app/osrm
 ```
 
-This will run the code in the Docker container and write the `.csv` files in your local folder. Note that this DockeImage uses the **car profile** (a `.lua`script, other profiles are **bicyle** and **foot**) with the standard settings. You can customize settings such as speeds, access rules, or even add penalties for turns, ferries, or toll roads (do this before extraction and contraction of `osm.pbf` files).
+This writes CSV outputs to your local `results` folder.
 
-Make sure you provide the list of coordinates in `DockerImage/results/coordinates.txt`.
+Note: this Docker image uses the car profile by default (other common profiles are bicycle and foot).
 
 ## Build & run (native)
 
@@ -109,9 +125,8 @@ Build
 
 ```sh
 mkdir -p build
-cd build
-cmake ..
-cmake --build . --parallel 8
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build --parallel 8
 ```
 
 Run
