@@ -90,9 +90,14 @@ Common examples:
 ```
 
 Notes:
-- Prerequisites: Docker and curl.
+- First run can take several minutes because the Docker image is built and data may be downloaded.
+- Later runs are usually much faster because image layers and region data are cached.
+- Rebuilds can be slow again when using `--force-build`, changing region/PBF source, or after Docker cache cleanup.
+- Prerequisites: Docker (daemon running), curl, and enough disk space for Docker layers plus OSM data.
 - `./run.sh` and `bash ./run.sh` are equivalent; use whichever you prefer.
 - If you change region or PBF source and already have an existing image, use `--force-build` to ensure the image is rebuilt with the new dataset.
+- Progress appears in terminal logs (`Downloading`, `Building docker image`, `Running container`).
+- Outputs are written to `results/travel_distances.csv` and `results/travel_times.csv`.
 
 ### Manual Docker workflow (advanced)
 
